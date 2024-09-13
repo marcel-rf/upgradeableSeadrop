@@ -22,7 +22,7 @@ const CollectionConfig: CollectionConfigInterface = {
   //   price: 0.01,
   //   maxMintAmountPerTx: 5,
   // },
-  publicMetadataUri: "ipfs://QmaPvDNzMAtGVfmv9E5vtSedYtJeFWcwz5kfxpsioY7CeP/",
+  publicMetadataUri: "ipfs://QmW84YjXWpvh6GrVBTvuHyavoCY7wfirZ4Uq65SqVe1wDm/",
   // contractAddress: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",//upgradable local node v1
   // contractAddress: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",//upgradable local node v2
   // contractAddress: "0xBDE61d4a30b5d9497407D7Cd950283eD0006f162",//upgradable sepolia v2 https://testnets.opensea.io/collection/waltertherabbit-2

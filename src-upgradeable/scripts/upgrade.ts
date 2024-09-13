@@ -2,7 +2,7 @@ import fs from "fs";
 import { ethers, upgrades } from "hardhat";
 
 async function main() {
-  const ERC721SeaDropUpgradeable = await ethers.getContractFactory("ERC721SeaDropUpgradeable");
+  const ERC721SeaDropUpgradeable = await ethers.getContractFactory("WalterTheRabbit");
 
   console.log("Upgrading...");
 

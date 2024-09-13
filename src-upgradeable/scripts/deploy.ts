@@ -1,14 +1,14 @@
 import fs from "fs";
 import { ethers, upgrades } from "hardhat";
 import CollectionConfig from "../config/CollectionConfig";
+import { seadropAddress, tokenSymbol } from "../config/constants";
 
 async function mainDeploy() {
   const tokenName = CollectionConfig.contractName;
   const ERC721SeaDropUpgradeable = await ethers.getContractFactory(tokenName);
 
   console.log(`Deploying WTR seadrop contract with name: ${tokenName}`);
-  const tokenSymbol = "WTR"
-  const allowedSeaDrop = ["0x00005EA00Ac477B1030CE78506496e8C2dE24bf5"]
+  const allowedSeaDrop = [seadropAddress]
 
   const token = await upgrades.deployProxy(
     ERC721SeaDropUpgradeable,

@@ -3,8 +3,10 @@ import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers } from "hardhat";
 import { ERC721SeaDropUpgradeable, ISeaDropUpgradeable, WalterTheRabbit } from "../../typechain-types";
+import CollectionConfig from "../config/CollectionConfig";
+import { MAX_SUPPLY, seadropAddress } from "../config/constants";
 import { deployContract } from "./common";
-import { getTokenUri, instantiateContract, seadropAddress } from "./common/base";
+import { getTokenUri, instantiateContract } from "./common/base";
 
 describe("Sepolia Token (Mint)", function () {
   let nft: WalterTheRabbit;
@@ -28,14 +30,32 @@ describe("Sepolia Token (Mint)", function () {
     externalAccount = _externalAccount;
   });
 
-  it("sepolia set stuff", async () => {
-    console.info(`mint with invalid amount ${ownerAddress}`);
+  it("sepolia set contract supply", async () => {
+    console.info(`set contract supply ${MAX_SUPPLY}`);
+    await nft
+      .connect(owner)
+      .setMaxSupply(MAX_SUPPLY);
+    expect(await nft.maxSupply()).to. equal(MAX_SUPPLY);
+  });
 
-    // await nft
-    //   .connect(owner)
-    //   .updateCreatorPayoutAddress(seadropAddress, ownerAddress);
 
-    //expect(await nft.balanceOf(externalAccountAddress)).to.equal(1);
+  it("sepolia set base uri", async () => {
+    console.info(`set base uri ${CollectionConfig.publicMetadataUri}`);
+    if (await nft.baseURI() == CollectionConfig.publicMetadataUri) {
+      console.info(`already set`);
+      return;
+    }
+    await nft
+      .connect(owner)
+      .setBaseURI(CollectionConfig.publicMetadataUri);
+    expect(await nft.baseURI()).to. equal(CollectionConfig.publicMetadataUri);
+  });
+
+  it("sepolia check max supply", async () => {
+    console.info(`check max supply`);
+    expect(await nft.maxSupply()).to. equal(MAX_SUPPLY);
+
+    expect(await nft.baseURI()).to. equal(CollectionConfig.publicMetadataUri);
   });
 
   it("sepolia mints token with invalid amount", async () => {
@@ -52,8 +72,15 @@ describe("Sepolia Token (Mint)", function () {
     const transaction = await nft
       .connect(owner)
       .mint(seadropAddress, 1, ownerAddress, { value: mintPrice.toString() });
-    expect(await nft.balanceOf(ownerAddress)).to. equal(1);
+
     console.log(`mint transaction details ${transaction.value} hash: ${transaction.hash}`);
+
+
     const tokenUri = await getTokenUri(nft, owner, 1);
+    console.log(`tokenUri ${tokenUri}`);
+
+
+    // check the balance (this can fail in test/mainnet as it takes some time for confirmation)
+    expect(await nft.balanceOf(ownerAddress)).to. equal(1);
   });
 });

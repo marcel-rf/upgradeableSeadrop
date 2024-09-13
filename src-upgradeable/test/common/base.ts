@@ -1,10 +1,7 @@
 import { Contract, Signer } from "ethers";
 import { ethers, upgrades } from "hardhat";
 import CollectionConfig from "../../config/CollectionConfig";
-
-export const tokenName = CollectionConfig.tokenName;
-export const tokenSymbol = CollectionConfig.tokenSymbol;
-export const seadropAddress = process.env.SEADROP_ADDRESS || "";
+import { seadropAddress, tokenName, tokenSymbol } from "../../config/constants";
 
 export const deployContract = async () => {
   const [owner, externalAccount, nonHolder]: Signer[] =
