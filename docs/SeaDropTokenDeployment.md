@@ -1,6 +1,6 @@
 # Token Deployment
 
-An example script to deploy a token contract is located at [DeployAndConfigureExampleToken.s.sol](../script/DeployAndConfigureExampleToken.s.sol). It can be run with `forge script script/DeployAndConfigureExampleToken.s.sol --rpc-url ${RPC_URL} --broadcast -vvvv --private-key ${PK} --etherscan-api-key ${ETHERSCAN_API_KEY} --verify --retries 10`
+An example script to deploy a token contract is located at [DeployAndConfigureWalterTheRabbit.s.sol](../script/DeployAndConfigureWalterTheRabbit.s.sol). It can be run with `forge script script/DeployAndConfigureWalterTheRabbit.s.sol --rpc-url ${RPC_URL} --broadcast -vvvv --private-key ${PK} --etherscan-api-key ${ETHERSCAN_API_KEY} --verify --retries 10`
 
 ### ERC721SeaDrop
 

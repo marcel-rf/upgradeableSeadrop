@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "uuid": {
+            "type": "string"
+          },
+          "isPublic": {
+            "type": "boolean"
+          },
+          "allowListURI": {
+            "type": "string"
+          },
+          "allowedTokenAddresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mintPrice": {
+            "type": "integer"
+          },
+          "maxTotalMintableByWallet": {
+            "type": "integer"
+          },
+          "maxTokenSupplyForStage": {
+            "type": "integer"
+          },
+          "startTime": {
+            "type": "integer"
+          },
+          "endTime": {
+            "type": "integer"
+          },
+          "feeBps": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

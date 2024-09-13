@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "address": {
+      "type": "string"
+    },
+    "mintPrice": {
+      "type": "integer"
+    },
+    "maxTotalMintableByWallet": {
+      "type": "integer"
+    },
+    "startTime": {
+      "type": "integer"
+    },
+    "endTime": {
+      "type": "integer"
+    },
+    "dropStageIndex": {
+      "type": "integer"
+    },
+    "maxTokenSupplyForStage": {
+      "type": "integer"
+    },
+    "feeBps": {
+      "type": "integer"
+    },
+    "restrictFeeRecipients": {
+      "type": "boolean"
+    }
+  }
+}

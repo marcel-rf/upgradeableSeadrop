@@ -6,6 +6,8 @@ import {
     ISeaDropTokenContractMetadataUpgradeable
 } from "./ERC721ContractMetadataUpgradeable.sol";
 
+import "hardhat/console.sol";
+
 import {
     INonFungibleSeaDropTokenUpgradeable
 } from "./interfaces/INonFungibleSeaDropTokenUpgradeable.sol";
@@ -78,7 +80,7 @@ contract ERC721SeaDropUpgradeable is
         string memory name,
         string memory symbol,
         address[] memory allowedSeaDrop
-    ) external initializer initializerERC721A {
+    ) external virtual initializer initializerERC721A {
         __ERC721SeaDrop_init(
             name,
             symbol,
@@ -299,7 +301,49 @@ contract ERC721SeaDropUpgradeable is
 
         // Update the public drop data on SeaDrop.
         ISeaDropUpgradeable(seaDropImpl).updatePublicDrop(publicDrop);
+
     }
+
+    function isContract(address _addr) internal view returns (bool) {
+        return _addr.code.length > 0;
+    }
+
+
+    /**
+     * @notice Update the public drop data for this nft contract on SeaDrop.
+     *         Only the owner can use this function.
+     *
+     * @param seaDropImpl The allowed SeaDrop contract.
+     */
+    function getPublicDrop(
+        address seaDropImpl
+    ) internal virtual returns (PublicDrop memory){
+        // Ensure the SeaDrop is allowed.
+        _onlyAllowedSeaDrop(seaDropImpl);
+
+        // Update the public drop data on SeaDrop.
+        console.log("getPublicDrop contract Address:", address(this));
+        uint16 feeBps = 500; // 5%
+        uint80 mintPrice = 0.01 ether;
+        uint16 maxTotalMintableByWallet = 5;
+
+        if (isContract(seaDropImpl)) {
+            console.log("using ISeaDropUpgradeable.getPublicDrop contract address:", seaDropImpl);
+            return ISeaDropUpgradeable(seaDropImpl).getPublicDrop(address(this));
+        } else {
+            console.log("using hardcoded drop data", seaDropImpl);
+            return
+                PublicDrop(
+                mintPrice,
+                uint48(block.timestamp), // start time
+                uint48(block.timestamp) + 1000, // end time
+                maxTotalMintableByWallet,
+                feeBps,
+                true
+            );
+        }
+    }
+
 
     /**
      * @notice Update the allow list data for this nft contract on SeaDrop.
@@ -388,7 +432,7 @@ contract ERC721SeaDropUpgradeable is
     function updateCreatorPayoutAddress(
         address seaDropImpl,
         address payoutAddress
-    ) external {
+    ) public virtual {
         // Ensure the sender is only the owner or contract itself.
         _onlyOwnerOrSelf();
 

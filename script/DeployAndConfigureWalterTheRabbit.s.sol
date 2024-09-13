@@ -8,12 +8,16 @@ import { ERC721SeaDrop } from "../src/ERC721SeaDrop.sol";
 import { ISeaDrop } from "../src/interfaces/ISeaDrop.sol";
 
 import { PublicDrop } from "../src/lib/SeaDropStructs.sol";
+import "../src-upgradeable/src/ERC721SeaDropUpgradeable.sol";
+import {WalterTheRabbit} from "../src-upgradeable/src/WalterTheRabbit.sol";
 
-contract DeployAndConfigureExampleToken is Script {
+contract DeployAndConfigureWalterTheRabbit is Script {
     // Addresses
     address seadrop = 0x00005EA00Ac477B1030CE78506496e8C2dE24bf5;
-    address creator = 0x26faf8AE18d15Ed1CA0563727Ad6D4Aa02fb2F80;
-    address feeRecipient = 0x0000a26b00c1F0DF003000390027140000fAa719;
+
+    //TODO update these
+    address creator = 0x4293b1bEEb593423b3802021386C8F384AF917aE;
+    address feeRecipient = 0x4293b1bEEb593423b3802021386C8F384AF917aE;
 
     // Token config
     uint256 maxSupply = 100;
@@ -29,9 +33,9 @@ contract DeployAndConfigureExampleToken is Script {
         address[] memory allowedSeadrop = new address[](1);
         allowedSeadrop[0] = seadrop;
 
-        ERC721SeaDrop token = new ERC721SeaDrop(
-            "My Example Token",
-            "ExTKN",
+        ERC721SeaDropUpgradeable token = new WalterTheRabbit(
+            "WalterTheRabbit",
+            "WTR",
             allowedSeadrop
         );
 
@@ -60,5 +64,8 @@ contract DeployAndConfigureExampleToken is Script {
             address(0),
             3 // quantity
         );
+
+        const tokenUri = token.tokenURI(1);
+        console.info(`token uri ${tokenUri}`);
     }
 }

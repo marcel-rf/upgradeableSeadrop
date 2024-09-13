@@ -1,0 +1,30 @@
+{
+  "name": "An Example Drop",
+  "description": "This is the description for this example drop.",
+  "stages": [
+    {
+      "name": "My Public Stage",
+      "description": "My public stage description.",
+      "uuid": "ecae5ad4-fa40-4e79-856b-ec304c3ea5d4",
+      "isPublic": true,
+      "mintPrice": 1000000000000000000,
+      "maxTotalMintableByWallet": 50,
+      "maxTokenSupplyForStage": 5000,
+      "startTime": 1659045594,
+      "endTime": 1659045594,
+      "feeBps": 500
+    },
+    {
+      "name": "My Private Allow List Stage",
+      "description": "My private stage description",
+      "uuid": "07e7a791-42ad-46e6-968a-564acf0c06dc",
+      "isPublic": false,
+      "mintPrice": 1000000000000000,
+      "maxTotalMintableByWallet": 5,
+      "maxTokenSupplyForStage": 1000,
+      "startTime": 1659043594,
+      "endTime": 1659044594,
+      "feeBps": 500
+    }
+  ]
+}

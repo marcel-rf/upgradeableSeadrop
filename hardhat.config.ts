@@ -3,9 +3,8 @@ import fs from "fs";
 import type { HardhatUserConfig } from "hardhat/config";
 
 import "dotenv/config";
-import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-etherscan";
+import "@nomicfoundation/hardhat-verify";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-preprocessor";
@@ -52,27 +51,27 @@ const config: HardhatUserConfig = {
       url: process.env.NETWORK_RPC ?? "",
     },
   },
-  gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
-  },
-  etherscan: {
-    apiKey: process.env.EXPLORER_API_KEY,
-  },
-  preprocess: {
-    eachLine: (hre) => ({
-      transform: (line: string) => {
-        if (line.match(/ from "/i)) {
-          getRemappings().forEach(([find, replace]: string[]) => {
-            if (line.match(find)) {
-              line = line.replace(find, replace);
-            }
-          });
-        }
-        return line;
-      },
-    }),
-  },
+  // gasReporter: {
+  //   enabled: process.env.REPORT_GAS !== undefined,
+  //   currency: "USD",
+  // },
+  // etherscan: {
+  //   apiKey: process.env.EXPLORER_API_KEY,
+  // },
+  // preprocess: {
+  //   eachLine: (hre) => ({
+  //     transform: (line: string) => {
+  //       if (line.match(/ from "/i)) {
+  //         getRemappings().forEach(([find, replace]: string[]) => {
+  //           if (line.match(find)) {
+  //             line = line.replace(find, replace);
+  //           }
+  //         });
+  //       }
+  //       return line;
+  //     },
+  //   }),
+  // },
   // specify separate cache for hardhat, since it could possibly conflict with foundry's
   paths: { sources: "./src", cache: "./hh-cache" },
 };

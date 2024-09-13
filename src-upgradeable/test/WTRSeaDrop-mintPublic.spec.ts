@@ -1,21 +1,26 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
-import { ethers, network } from "hardhat";
+import { ethers, network, upgrades } from "hardhat";
 
-import CollectionConfig from "../src-upgradeable/config/CollectionConfig";
+import { randomHex } from "../../test/utils/encoding";
+import { faucet } from "../../test/utils/faucet";
+import { VERSION } from "../../test/utils/helpers";
 
-import { randomHex } from "./utils/encoding";
-import { faucet } from "./utils/faucet";
-import { VERSION } from "./utils/helpers";
-
-import type { ERC721SeaDrop, ISeaDrop, SeaDrop } from "../typechain-types";
-import type { PublicDropStruct } from "../typechain-types/src/SeaDrop";
+import type {
+  ERC721SeaDrop,
+  ERC721SeaDropUpgradeable, ISeaDrop,
+  ISeaDropUpgradeable,
+  WalterTheRabbit
+} from "../../typechain-types";
+import type { PublicDropStruct } from "../../typechain-types/WalterTheRabbit";
 import type { Wallet } from "ethers";
+import collectionConfig from "../config/CollectionConfig";
+import CollectionConfig from "../config/CollectionConfig";
 
-describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
+describe(`WTR SeaDropUpgradeable - Mint Public (v${VERSION})`, function() {
   const { provider } = ethers;
-  let seadrop: ISeaDrop;
-  let token: ERC721SeaDrop;
+  let seadrop: ISeaDropUpgradeable;
+  let token: WalterTheRabbit;
   let owner: Wallet;
   let creator: Wallet;
   let payer: Wallet;
@@ -25,7 +30,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
 
   after(async () => {
     await network.provider.request({
-      method: "hardhat_reset",
+      method: "hardhat_reset"
     });
   });
 
@@ -42,52 +47,86 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       await faucet(wallet.address, provider);
     }
 
-    // Deploy SeaDrop
-    const SeaDrop = await ethers.getContractFactory(
-      "SeaDrop",
-      owner
-    );
-    seadrop = (await SeaDrop.deploy()) as SeaDrop;
-    console.info(`contract ${seadrop.address}`);
+    // Deploy Seadrop.
+    const SeaDrop = await ethers.getContractFactory("ERC721SeaDropUpgradeable");
+    seadrop = await SeaDrop.deploy() as ISeaDropUpgradeable;
+
+    // // Deploy SeaDrop
+    // const SeaDrop = await ethers.getContractFactory(
+    //   "ERC721SeaDropUpgradeable",
+    //   owner
+    // );
+    // seadrop = (await SeaDrop.deploy()) as ISeaDropUpgradeable;
+    await seadrop.deployed();
+    console.info(`contract Seadrop deployed to address: ${seadrop.address}`);
   });
 
   beforeEach(async () => {
     // Deploy token
-    const ERC721SeaDrop = await ethers.getContractFactory(
-      "ERC721SeaDrop",
+    const ERC721SeaDropUpgradeable = await ethers.getContractFactory(
+      "WalterTheRabbit",
       owner
     );
-    token = (await ERC721SeaDrop.deploy("", "", [
-      seadrop.address,
-    ])) as ERC721SeaDrop;
+    const tokenName = "WalterTheRabbit";
+    const tokenSymbol = "WTR";
 
+    token = (await upgrades.deployProxy(
+      ERC721SeaDropUpgradeable,
+      [
+        tokenName,
+        tokenSymbol,
+        [seadrop.address],
+      ],
+      { initializer: "initialize" }
+    )) as WalterTheRabbit;
+
+    await token.deployed();
+    // token = (await upgrades.deployProxy(ERC721SeaDropUpgradeable, [
+    //   tokenName, tokenSymbol, [
+    //     seadrop.address
+    //   ]
+    // ])) as ERC721SeaDropUpgradeable;
+
+    console.info(`deployed contract proxy to ${token.address} symbol: ${await token.symbol()} name: ${await token.name()}`);
     // Configure token
     await token.setMaxSupply(100);
-    await token.updateCreatorPayoutAddress(seadrop.address, creator.address);
+    console.info("set max supply to 100");
+
+
+    await token.setBaseURI(collectionConfig.publicMetadataUri);
+    console.info(`setBaseURI to ${collectionConfig.publicMetadataUri}`);
+
+    console.info(`updateCreatorPayoutAddress to seadrop: ${seadrop.address} creator: ${creator.address}`);
+    // await token.updateCreatorPayoutAddress(seadrop.address, creator.address);
+    console.info("updated creator payout address")
     publicDrop = {
       mintPrice: "100000000000000000", // 0.1 ether
       maxTotalMintableByWallet: 10,
       startTime: Math.round(Date.now() / 1000) - 100,
       endTime: Math.round(Date.now() / 1000) + 100,
       feeBps: 1000,
-      restrictFeeRecipients: true,
+      restrictFeeRecipients: true
     };
     await token.updatePublicDrop(seadrop.address, publicDrop);
-    await token.updateAllowedFeeRecipient(
-      seadrop.address,
-      feeRecipient.address,
-      true
-    );
+    // await token.updatePublicDrop(publicDrop);
+    console.info("updated public drop")
+
+    // await token.updateAllowedFeeRecipient(
+    //   seadrop.address,
+    //   feeRecipient.address,
+    //   true
+    // );
   });
 
   it("Should mint a public stage", async () => {
     // Mint public with payer for minter.
     const value = BigNumber.from(publicDrop.mintPrice).mul(3);
+    console.info(`mintPublic to WTR address: ${token.address}`);
     await expect(
       seadrop
-        .connect(payer)
+        .connect(owner)
         .mintPublic(token.address, feeRecipient.address, minter.address, 3, {
-          value,
+          value
         })
     ).to.be.revertedWith("PayerNotAllowed");
 
@@ -108,7 +147,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(payer)
         .mintPublic(token.address, feeRecipient.address, minter.address, 3, {
-          value,
+          value
         })
     )
       .to.emit(seadrop, "SeaDropMint")
@@ -173,7 +212,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
     // Set start time in the future.
     await token.updatePublicDrop(seadrop.address, {
       ...publicDrop,
-      startTime: Math.round(Date.now() / 1000) + 100,
+      startTime: Math.round(Date.now() / 1000) + 100
     });
 
     // Mint public with payer for minter.
@@ -182,7 +221,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(payer)
         .mintPublic(token.address, feeRecipient.address, minter.address, 3, {
-          value,
+          value
         })
     ).to.be.revertedWith("NotActive");
 
@@ -204,7 +243,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
     // Set start time in the future.
     await token.updatePublicDrop(seadrop.address, {
       ...publicDrop,
-      endTime: Math.round(Date.now() / 1000) - 100,
+      endTime: Math.round(Date.now() / 1000) - 100
     });
 
     // Mint public with payer for minter.
@@ -213,7 +252,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(payer)
         .mintPublic(token.address, feeRecipient.address, minter.address, 3, {
-          value,
+          value
         })
     ).to.be.revertedWith("NotActive");
 
@@ -245,7 +284,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(minter)
         .mintPublic(token.address, feeRecipient.address, minter.address, 1, {
-          value,
+          value
         })
     )
       .to.emit(seadrop, "SeaDropMint")
@@ -265,7 +304,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(minter)
         .mintPublic(token.address, feeRecipient.address, minter.address, 1, {
-          value,
+          value
         })
     ).to.be.revertedWith("MintQuantityExceedsMaxSupply");
 
@@ -282,7 +321,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
           ethers.constants.AddressZero,
           1,
           {
-            value,
+            value
           }
         )
     )
@@ -303,7 +342,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(minter)
         .mintPublic(token.address, feeRecipient.address, minter.address, 1, {
-          value,
+          value
         })
     ).to.be.revertedWith("MintQuantityExceedsMaxMintedPerWallet");
   });
@@ -322,7 +361,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
           minter.address,
           mintQuantity,
           {
-            value,
+            value
           }
         )
     ).to.be.revertedWith("IncorrectPayment");
@@ -354,7 +393,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
           minter.address,
           1,
           {
-            value,
+            value
           }
         )
     ).to.be.revertedWith("FeeRecipientCannotBeZeroAddress");
@@ -363,7 +402,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
       seadrop
         .connect(minter)
         .mintPublic(token.address, creator.address, minter.address, 1, {
-          value,
+          value
         })
     ).to.be.revertedWith("FeeRecipientNotAllowed");
   });
@@ -386,7 +425,7 @@ describe(`SeaDrop - Mint Public (v${VERSION})`, function () {
           ethers.constants.AddressZero,
           1,
           {
-            value: publicDrop.mintPrice,
+            value: publicDrop.mintPrice
           }
         )
     )

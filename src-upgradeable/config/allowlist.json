@@ -1,0 +1,24 @@
+[
+  {
+    "address": "0xf0E16c071E2cd421974dCb76d9af4DeDB578E059",
+    "mintPrice": 1000000000000000000,
+    "maxTotalMintableByWallet": 10,
+    "startTime": 1659045594,
+    "endTime": 1659045594,
+    "dropStageIndex": 1,
+    "maxTokenSupplyForStage": 1000,
+    "feeBps": 1000,
+    "restrictFeeRecipients": true
+  },
+  {
+    "address": "0x829bd824b016326a401d083b33d092293333a830",
+    "mintPrice": 1000000000000000000,
+    "maxTotalMintableByWallet": 5,
+    "startTime": 1659045594,
+    "endTime": 1659045594,
+    "dropStageIndex": 2,
+    "maxTokenSupplyForStage": 500,
+    "feeBps": 1250,
+    "restrictFeeRecipients": false
+  }
+]

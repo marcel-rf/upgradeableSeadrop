@@ -15,6 +15,18 @@ These functions are internal, and you must define your own public initializer fu
 
 If using with another upgradeable library, please do use their respective initializer modifier on the `initialize()` function, in addition to the `onlyInitializing` modifier.
 
+## Generate Typechain
+
+
+Specific to a contract
+
+    typechain --target ethers-v5 --out-dir typechain-types --show-stack-traces './src-upgradeable/artifacts/src/WalterTheRabbit.sol/WalterTheRabbit.json'
+    
+Generate all mappings
+
+    typechain --target ethers-v5 --out-dir typechain-types --show-stack-traces './src-upgradeable/artifacts/src/*.sol/*[!dbg].json' './src-upgradeable/artifacts/src/interfaces/*.sol/*[!dbg].json' 
+
+
 ## Deployment
 
 If you are using hardhat, you can deploy it using 
@@ -24,9 +36,14 @@ If you are using hardhat, you can deploy it using
 
 Located at [`scripts/deploy.ts`](./scripts/deploy.ts)
 
+    hardhat run --config ./src-upgradeable/hardhat.config.ts src-upgradeable/scripts/deploy.ts
+
 **Upgrade Script**
 
 Located at [`scripts/upgrade.ts`](./scripts/upgrade.ts)
+
+        hardhat run --config ./src-upgradeable/hardhat.config.ts src-upgradeable/scripts/upgrade.ts
+
 
 ### Testnet / Mainnet
 
