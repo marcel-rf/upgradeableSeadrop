@@ -4,6 +4,8 @@ export default interface CollectionConfigInterface {
   tokenSymbol: string;
   hiddenMetadataUri: string;
   publicMetadataUri: string;
+  contractMetadataUri: string;
+  dropUri: string;
   maxSupply: number;
   contractAddress: string|null;
   marketplaceIdentifier: string;

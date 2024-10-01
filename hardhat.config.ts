@@ -58,22 +58,27 @@ const config: HardhatUserConfig = {
   // etherscan: {
   //   apiKey: process.env.EXPLORER_API_KEY,
   // },
-  // preprocess: {
-  //   eachLine: (hre) => ({
-  //     transform: (line: string) => {
-  //       if (line.match(/ from "/i)) {
-  //         getRemappings().forEach(([find, replace]: string[]) => {
-  //           if (line.match(find)) {
-  //             line = line.replace(find, replace);
-  //           }
-  //         });
-  //       }
-  //       return line;
-  //     },
-  //   }),
-  // },
+  preprocess: {
+    eachLine: (hre) => ({
+      transform: (line: string) => {
+        if (line.match(/ from "/i)) {
+          getRemappings().forEach(([find, replace]: string[]) => {
+            if (line.match(find)) {
+              line = line.replace(find, replace);
+            }
+          });
+        }
+        return line;
+      },
+    }),
+  },
   // specify separate cache for hardhat, since it could possibly conflict with foundry's
-  paths: { sources: "./src", cache: "./hh-cache" },
+  paths: {
+    sources: "./src",
+    tests: "./src-upgradeable/test",
+    cache: "./hh-cache",
+    artifacts: "./typechain-types",
+  },
 };
 
 export default config;

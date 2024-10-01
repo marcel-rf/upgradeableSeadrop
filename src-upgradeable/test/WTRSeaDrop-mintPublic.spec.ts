@@ -78,27 +78,24 @@ describe(`WTR SeaDropUpgradeable - Mint Public (v${VERSION})`, function() {
         [seadrop.address],
       ],
       { initializer: "initialize" }
-    )) as WalterTheRabbit;
+    )) as WalterTheRabbit; //as ERC721SeaDropUpgradeable;
 
     await token.deployed();
-    // token = (await upgrades.deployProxy(ERC721SeaDropUpgradeable, [
-    //   tokenName, tokenSymbol, [
-    //     seadrop.address
-    //   ]
-    // ])) as ERC721SeaDropUpgradeable;
 
     console.info(`deployed contract proxy to ${token.address} symbol: ${await token.symbol()} name: ${await token.name()}`);
     // Configure token
     await token.setMaxSupply(100);
     console.info("set max supply to 100");
 
-
     await token.setBaseURI(collectionConfig.publicMetadataUri);
     console.info(`setBaseURI to ${collectionConfig.publicMetadataUri}`);
 
+    // update creator payout address
     console.info(`updateCreatorPayoutAddress to seadrop: ${seadrop.address} creator: ${creator.address}`);
     // await token.updateCreatorPayoutAddress(seadrop.address, creator.address);
     console.info("updated creator payout address")
+
+
     publicDrop = {
       mintPrice: "100000000000000000", // 0.1 ether
       maxTotalMintableByWallet: 10,

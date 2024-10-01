@@ -1,19 +1,34 @@
 import { Contract, Signer } from "ethers";
 import { ethers, upgrades } from "hardhat";
+import { SeaDrop } from "../../../typechain-types/src";
 import CollectionConfig from "../../config/CollectionConfig";
-import { seadropAddress, tokenName, tokenSymbol } from "../../config/constants";
+import { tokenName, tokenSymbol } from "../../config/constants";
 
 export const deployContract = async () => {
   const [owner, externalAccount, nonHolder]: Signer[] =
     await ethers.getSigners();
+
+
+  // Deploy Seadrop Upgradeable
+  //const SeaDrop = await ethers.getContractFactory("ERC721SeaDropUpgradeable", owner);
+  // const SeaDrop = await ethers.getContractFactory("Seadrop", owner);
+  // const seadrop = await SeaDrop.deploy() as ISeaDropUpgradeable;
+  // Deploy SeaDrop
+
+  const SeaDrop = await ethers.getContractFactory("ERC721SeaDropUpgradeable", owner);
+  const seadrop = await SeaDrop.deploy() as SeaDrop;
+  console.info(`deployed ERC721SeaDropUpgradeable as seadrop address ${seadrop.address} with owner: ${await owner.getAddress()}`);
+  await seadrop.deployed();
+
+
   const NFTFactory = await ethers.getContractFactory(tokenName);
-  console.info(`NFTFactory for ${tokenName}`);
+  console.info(`NFTFactory for ${tokenName}  with name: ${tokenName} sym: ${tokenSymbol} seadrop: ${seadrop.address}`);
   const nft = await upgrades.deployProxy(
     NFTFactory,
     [
       tokenName,
       tokenSymbol,
-      [seadropAddress]
+      [seadrop.address]
     ],
     {
       initializer: "initialize"
@@ -21,7 +36,7 @@ export const deployContract = async () => {
   );
   console.info(`deploying ${tokenName}`);
   await nft.deployed();
-  console.warn(`deployed contract proxy to ${nft.address} symbol: ${await nft.symbol()} name: ${await nft.name()}`);
+  console.warn(`deployed contract proxy to ${nft.address} symbol: ${await nft.symbol()} name: ${await nft.name()} seadrop: ${seadrop.address}`);
   const addresses = {
     proxy: nft.address,
     admin: await upgrades.erc1967.getAdminAddress(nft.address),
@@ -39,6 +54,7 @@ export const deployContract = async () => {
 
 
   return {
+    seadrop,
     nft,
     owner,
     ownerAddress: ownerAddress,

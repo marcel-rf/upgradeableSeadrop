@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
     apiKey: process.env.BLOCK_EXPLORER_API_KEY,
   },
   // specify separate cache for hardhat, since it could possibly conflict with foundry's
-  paths: { sources: "./src", cache: "./hh-cache" },
+  paths: { sources: "./src", tests: "./test", cache: "./hh-cache" },
   mocha: {
     timeout: 120000
   }

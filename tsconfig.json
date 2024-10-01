@@ -9,5 +9,5 @@
     "resolveJsonModule": true
   },
   "include": ["./src-upgradeable/scripts","./scripts", "./src-upgradeable/test", "./test", "./typechain-types", "./eip-712-types", "./*.config.ts"],
-  "files": ["./src-upgradeable/hardhat.config.ts"]
+  "files": ["./src-upgradeable/hardhat.config.ts", "./hardhat.config.ts"]
 }

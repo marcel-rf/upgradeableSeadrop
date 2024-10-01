@@ -3,6 +3,11 @@ import { ethers, upgrades } from "hardhat";
 import CollectionConfig from "../config/CollectionConfig";
 import { seadropAddress, tokenSymbol } from "../config/constants";
 
+/**
+ * see https://github.com/SteversIO/seadrop/blob/ec024fa7e1a3f608532b82dfcbad3cc4fc403c8a/scripts/deploy.ts
+ * to estimate gas prices better.
+ * now (testnet, mainnet requires to use the Mestamask Editor to adjust fees before submitting the trx)
+ */
 async function mainDeploy() {
   const tokenName = CollectionConfig.contractName;
   const ERC721SeaDropUpgradeable = await ethers.getContractFactory(tokenName);

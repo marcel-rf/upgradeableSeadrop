@@ -85,8 +85,8 @@ contract WalterTheRabbit is ERC721SeaDropUpgradeable {
         address delegateAddress
     ) external payable {
         // Get the public drop data.
-        console.log("mint seadrop:", seadrop);
-        PublicDrop memory publicDrop = getPublicDrop(seadrop);
+        console.log("mint seadrop: %s to contract address: %s", seadrop, address(this));
+        PublicDrop memory publicDrop = getPublicDrop(seadrop, address(this));
 
         // Ensure that the drop has started.
         //_checkActive(publicDrop.startTime, publicDrop.endTime);
@@ -94,13 +94,15 @@ contract WalterTheRabbit is ERC721SeaDropUpgradeable {
         uint256 mintPrice = publicDrop.mintPrice;
         console.log("mint quantity: %s price: %s. value: %s", quantity, mintPrice, msg.value);
 
-        require(msg.value == quantity * mintPrice, "Invalid ETH Amount for quantity");
-        console.log("after require", msg.value);
 
         require(
             _totalMinted() + quantity <= maxSupply(),
             "Exceed Total Supply"
         );
+
+        require(msg.value == quantity * mintPrice, "Invalid ETH Amount for quantity");
+        console.log("after require", msg.value);
+
         console.log("minting qty:", quantity);
         _mint(delegateAddress, quantity);
     }
